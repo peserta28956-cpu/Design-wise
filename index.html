@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESIGN WISE.</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#F5F3FF',
+                            100: '#EDE9FE',
+                            500: '#8B5CF6',
+                            600: '#7C3AED',
+                            700: '#6D28D9',
+                            900: '#4C1D95'
+                        },
+                        accent: {
+                            yellow: '#F59E0B',
+                            coral: '#EF4444',
+                            green: '#10B981',
+                            cyan: '#06B6D4'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #F5F3FF; }
+        ::-webkit-scrollbar-thumb { background: #DDD6FE; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B5CF6; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 10px 25px -5px rgba(109, 40, 217, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-purple-50 text-slate-800 h-full flex flex-col overflow-x-hidden selection:bg-purple-500 selection:text-white">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white border-b border-purple-100 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="router('home')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-purple-400 flex items-center justify-center text-white font-black text-xl shadow-md">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl tracking-wider text-purple-950">DESIGN <span class="text-purple-600">WISE</span></h1>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav id="main-nav" class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                <button onclick="router('home')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-purple-50 text-slate-600 hover:text-purple-700" data-target="home">Beranda</button>
+                <button onclick="router('dashboard')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-purple-50 text-slate-600 hover:text-purple-700 hidden" data-target="dashboard" id="nav-dashboard">Dashboard</button>
+                <button onclick="router('materials')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-purple-50 text-slate-600 hover:text-purple-700" data-target="materials">Materi</button>
+                <button onclick="router('missions')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-purple-50 text-slate-600 hover:text-purple-700 hidden" data-target="missions" id="nav-missions">Misi Investigasi</button>
+                <button onclick="router('clinic')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-purple-50 text-slate-600 hover:text-purple-700" data-target="clinic">Design Clinic</button>
+                <button onclick="router('assessment')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-purple-50 text-slate-600 hover:text-purple-700" data-target="assessment">Asesmen</button>
+                <button onclick="router('teacher')" class="nav-btn px-3 py-2 rounded-lg text-sm font-medium transition hover:bg-purple-50 text-purple-700 hover:text-purple-900 font-bold" data-target="teacher"><i class="fa-solid fa-chalkboard-user mr-1"></i> Dashboard Guru</button>
+            </nav>
+
+            <!-- User Quick Badge / Auth -->
+            <div class="flex items-center space-x-3">
+                <div id="user-badge" class="hidden items-center space-x-2 bg-purple-50 px-3 py-1.5 rounded-full border border-purple-200 shadow-sm">
+                    <span id="badge-avatar" class="w-7 h-7 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-xs">S</span>
+                    <div class="text-left hidden sm:block">
+                        <div id="badge-name" class="text-xs font-bold text-purple-950 truncate max-w-[100px]">Siswa</div>
+                        <div id="badge-level" class="text-[10px] text-purple-600 font-medium">Pemula</div>
+                    </div>
+                    <button onclick="logoutUser()" title="Keluar / Ganti Akun" class="text-slate-400 hover:text-red-500 ml-1"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+                <button onclick="openIdentityModal()" id="btn-login-header" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-xl text-sm transition shadow-md shadow-purple-500/20 flex items-center space-x-2">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Mulai Main</span>
+                </button>
+                <!-- Mobile Menu Toggle -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-slate-600 hover:text-purple-700 p-2">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-purple-100 px-4 pt-2 pb-4 space-y-2 shadow-lg">
+            <button onclick="router('home'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-purple-50">Beranda</button>
+            <button onclick="router('dashboard'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-purple-50 hidden" id="mob-dashboard">Dashboard</button>
+            <button onclick="router('materials'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-purple-50">Materi Pembelajaran</button>
+            <button onclick="router('missions'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-purple-50 hidden" id="mob-missions">Misi Investigasi</button>
+            <button onclick="router('clinic'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-purple-50">Design Clinic</button>
+            <button onclick="router('assessment'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-purple-50">Asesmen Pembelajaran</button>
+            <button onclick="router('teacher'); toggleMobileMenu();" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-purple-700 hover:bg-purple-50 font-bold">Dashboard Guru</button>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
+        
+        <!-- ================= VIEW: HOME ================= -->
+        <div id="view-home" class="view-section space-y-12">
+            <!-- Hero Section -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-700 to-purple-900 border border-purple-600 p-8 sm:p-12 shadow-xl text-white">
+                <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                    <i class="fa-solid fa-fingerprint text-[300px] text-white"></i>
+                </div>
+                <div class="max-w-3xl relative z-10 space-y-6">
+                    <div class="inline-flex items-center space-x-2 bg-white/10 border border-white/20 px-3 py-1.5 rounded-full text-purple-200 text-xs font-semibold backdrop-blur-md">
+                        <i class="fa-solid fa-sparkles"></i>
+                        <span>Game-Based Learning untuk SMK DKV Kelas X & XI</span>
+                    </div>
+                    <h2 class="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
+                        Find the Error. <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-amber-300">Solve the Design.</span>
+                    </h2>
+                    <p class="text-purple-100 text-base sm:text-lg leading-relaxed">
+                        <strong class="text-white underline decoration-amber-400"></strong>! Asah kemampuan analisis visual, temukan kesalahan prinsip desain grafis pada berbagai kasus nyata, pilih solusi terbaik, dan tingkatkan level detektifmu sekarang juga.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="startInvestigationFlow()" class="bg-amber-400 hover:bg-amber-300 text-purple-950 font-bold px-8 py-4 rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center space-x-3 text-base">
+                            <i class="fa-solid fa-play text-lg"></i>
+                            <span>Mulai Investigasi</span>
+                        </button>
+                        <button onclick="router('materials')" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-4 rounded-2xl border border-white/20 transition flex items-center space-x-2 text-base backdrop-blur-md">
+                            <i class="fa-solid fa-book-open text-purple-200"></i>
+                            <span>Panduan & Materi</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-panel p-6 rounded-2xl space-y-4 hover:border-purple-400 transition">
+                    <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">12 Misi Interaktif</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Investigasi berbagai kasus poster, tipografi, warna, dan layout dari tingkat pemula hingga profesional.
+                    </p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl space-y-4 hover:border-purple-400 transition">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-medal"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">Sistem Rank & Lencana</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Kumpulkan poin ketepatan analisis, raih lencana penghargaan eksklusif, dan buktikan keahlian DKV-mu.
+                    </p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl space-y-4 hover:border-purple-400 transition">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900">Design Clinic & Refleksi</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Pelajari perbandingan sebelum-sesudah (before-after) perbaikan desain serta refleksikan pemahaman belajarmu.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Syllabus / Learning Scope Summary -->
+            <div class="glass-panel p-8 rounded-3xl space-y-6">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-900">Cakupan Materi Pembelajaran DKV</h3>
+                        <p class="text-slate-500 text-sm">Disesuaikan dengan Kurikulum Dasar-Dasar Desain Komunikasi Visual SMK.</p>
+                    </div>
+                    <button onclick="router('materials')" class="text-purple-600 hover:underline text-sm font-semibold flex items-center space-x-1">
+                        <span>Lihat Semua Materi</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 space-y-2 hover:bg-purple-100 transition">
+                        <i class="fa-solid fa-scale-balanced text-purple-600 text-2xl"></i>
+                        <h4 class="font-semibold text-xs text-slate-800">Prinsip Desain</h4>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 space-y-2 hover:bg-purple-100 transition">
+                        <i class="fa-solid fa-font text-purple-600 text-2xl"></i>
+                        <h4 class="font-semibold text-xs text-slate-800">Tipografi</h4>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 space-y-2 hover:bg-purple-100 transition">
+                        <i class="fa-solid fa-palette text-purple-600 text-2xl"></i>
+                        <h4 class="font-semibold text-xs text-slate-800">Teori Warna</h4>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 space-y-2 hover:bg-purple-100 transition">
+                        <i class="fa-solid fa-table-cells-large text-purple-600 text-2xl"></i>
+                        <h4 class="font-semibold text-xs text-slate-800">Layout & Komposisi</h4>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 space-y-2 hover:bg-purple-100 transition">
+                        <i class="fa-solid fa-image text-purple-600 text-2xl"></i>
+                        <h4 class="font-semibold text-xs text-slate-800">Penggunaan Gambar</h4>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 space-y-2 hover:bg-purple-100 transition">
+                        <i class="fa-solid fa-bullhorn text-purple-600 text-2xl"></i>
+                        <h4 class="font-semibold text-xs text-slate-800">Desain Poster</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: STUDENT DASHBOARD ================= -->
+        <div id="view-dashboard" class="view-section hidden space-y-8">
+            <!-- Welcome Banner -->
+            <div class="glass-panel p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="flex items-center space-x-4">
+                    <div id="dash-avatar" class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-purple-400 flex items-center justify-center text-white text-2xl font-black shadow-lg">
+                        S
+                    </div>
+                    <div>
+                        <div class="text-xs text-purple-600 font-semibold uppercase tracking-wider" id="dash-class">Kelas X DKV</div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-900" id="dash-name">Nama Peserta Didik</h2>
+                        <p class="text-xs text-slate-500 mt-1">Sesi lokal tersimpan di browser. Siap melanjutkan investigasi!</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4 w-full md:w-auto justify-between md:justify-end">
+                    <div class="bg-purple-50 px-4 py-3 rounded-2xl border border-purple-100 text-center">
+                        <div class="text-xs text-slate-500">Total Skor</div>
+                        <div class="text-xl font-black text-amber-600" id="dash-score">0</div>
+                    </div>
+                    <div class="bg-purple-50 px-4 py-3 rounded-2xl border border-purple-100 text-center">
+                        <div class="text-xs text-slate-500">Misi Selesai</div>
+                        <div class="text-xl font-black text-purple-600" id="dash-missions-completed">0/12</div>
+                    </div>
+                    <button onclick="router('missions')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3 rounded-2xl shadow-lg transition flex items-center space-x-2">
+                        <span>Lanjut Misi</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Rank & Progress Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Level Detektif -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 text-lg">Level Detektif</h3>
+                        <i class="fa-solid fa-user-secret text-purple-600 text-xl"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span id="dash-rank-title" class="font-bold text-amber-600">Detektif Pemula</span>
+                            <span id="dash-rank-pct" class="text-slate-500">0%</span>
+                        </div>
+                        <div class="w-full bg-purple-100 h-3 rounded-full overflow-hidden border border-purple-200">
+                            <div id="dash-rank-bar" class="bg-gradient-to-r from-purple-600 to-amber-400 h-full w-0 transition-all duration-500"></div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500" id="dash-rank-desc">Selesaikan misi tingkat pemula untuk naik ke tingkat menengah.</p>
+                </div>
+
+                <!-- Lencana Pencapaian -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4 md:col-span-2">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 text-lg">Lencana Penghargaan</h3>
+                        <i class="fa-solid fa-award text-amber-500 text-xl"></i>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4" id="badges-container">
+                        <!-- Badge 1 -->
+                        <div id="badge-1" class="bg-purple-50/50 border border-purple-200 p-4 rounded-xl text-center space-y-2 opacity-40 transition">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </div>
+                            <div class="font-bold text-xs text-slate-800">Detektif Pemula</div>
+                            <div class="text-[10px] text-slate-500">Selesaikan Level 1</div>
+                        </div>
+                        <!-- Badge 2 -->
+                        <div id="badge-2" class="bg-purple-50/50 border border-purple-200 p-4 rounded-xl text-center space-y-2 opacity-40 transition">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div class="font-bold text-xs text-slate-800">Analis Desain</div>
+                            <div class="text-[10px] text-slate-500">Selesaikan Level 2</div>
+                        </div>
+                        <!-- Badge 3 -->
+                        <div id="badge-3" class="bg-purple-50/50 border border-purple-200 p-4 rounded-xl text-center space-y-2 opacity-40 transition">
+                            <div class="w-10 h-10 mx-auto rounded-full bg-red-100 text-red-700 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-crown"></i>
+                            </div>
+                            <div class="font-bold text-xs text-slate-800">Master Detective</div>
+                            <div class="text-[10px] text-slate-500">Selesaikan Semua Misi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action / Recommendation -->
+            <div class="glass-panel p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h4 class="font-bold text-slate-900 text-base">Rekomendasi Belajar Berdasarkan Analisis</h4>
+                    <p class="text-xs text-slate-500" id="dash-recommendation">Belum ada data kesalahan. Mulai misi investigasimu sekarang!</p>
+                </div>
+                <button onclick="router('missions')" class="bg-purple-100 hover:bg-purple-200 text-purple-700 border border-purple-200 px-5 py-2.5 rounded-xl font-semibold text-sm transition">
+                    Mulai Misi Aktif
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: LEARNING MATERIALS ================= -->
+        <div id="view-materials" class="view-section hidden space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-900">Materi Pembelajaran DKV</h2>
+                <p class="text-slate-500 text-sm sm:text-base">Panduan visual lengkap mengenai prinsip desain grafis, tipografi, warna, layout, dan evaluasi desain untuk peserta didik SMK.</p>
+            </div>
+
+            <!-- Material Tabs / Navigation -->
+            <div class="flex overflow-x-auto space-x-2 pb-2 scrollbar-none" id="material-tabs">
+                <button onclick="switchMaterial(0)" class="mat-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-purple-600 text-white shadow-md" data-index="0">1. Prinsip Desain</button>
+                <button onclick="switchMaterial(1)" class="mat-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-white text-slate-600 hover:bg-purple-50 border border-purple-100" data-index="1">2. Tipografi</button>
+                <button onclick="switchMaterial(2)" class="mat-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-white text-slate-600 hover:bg-purple-50 border border-purple-100" data-index="2">3. Warna & Kontras</button>
+                <button onclick="switchMaterial(3)" class="mat-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-white text-slate-600 hover:bg-purple-50 border border-purple-100" data-index="3">4. Layout & Komposisi</button>
+                <button onclick="switchMaterial(4)" class="mat-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-white text-slate-600 hover:bg-purple-50 border border-purple-100" data-index="4">5. Penggunaan Gambar</button>
+                <button onclick="switchMaterial(5)" class="mat-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-white text-slate-600 hover:bg-purple-50 border border-purple-100" data-index="5">6. Desain Poster</button>
+                <button onclick="switchMaterial(6)" class="mat-tab px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold whitespace-nowrap transition bg-white text-slate-600 hover:bg-purple-50 border border-purple-100" data-index="6">7. Evaluasi Desain</button>
+            </div>
+
+            <!-- Material Content Box -->
+            <div class="glass-panel p-6 sm:p-10 rounded-3xl space-y-8" id="material-content-container">
+                <!-- Dynamic Content injected via JS -->
+            </div>
+        </div>
+
+        <!-- ================= VIEW: MISSIONS LIST ================= -->
+        <div id="view-missions" class="view-section hidden space-y-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-3xl font-black text-slate-900">Misi Investigasi Desain</h2>
+                    <p class="text-slate-500 text-sm">Pilih misi berdasarkan tingkat kesulitan detektif.</p>
+                </div>
+                <!-- Level Filter -->
+                <div class="flex space-x-2 bg-white p-1.5 rounded-xl border border-purple-200 shadow-sm">
+                    <button onclick="filterMissions('all')" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white transition" data-level="all">Semua</button>
+                    <button onclick="filterMissions(1)" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-purple-700 transition" data-level="1">Level 1</button>
+                    <button onclick="filterMissions(2)" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-purple-700 transition" data-level="2">Level 2</button>
+                    <button onclick="filterMissions(3)" class="filter-btn px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600 hover:text-purple-700 transition" data-level="3">Level 3</button>
+                </div>
+            </div>
+
+            <!-- Missions Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="missions-grid">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- ================= VIEW: MISSION GAMEPLAY ================= -->
+        <div id="view-gameplay" class="view-section hidden space-y-6">
+            <div class="flex items-center justify-between bg-white px-6 py-4 rounded-2xl border border-purple-100 shadow-sm">
+                <button onclick="router('missions')" class="text-slate-600 hover:text-purple-700 text-sm font-semibold flex items-center space-x-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Kembali ke Daftar Misi</span>
+                </button>
+                <div class="flex items-center space-x-4">
+                    <span id="gameplay-level-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700 border border-purple-200">Level 1</span>
+                    <span class="text-xs text-slate-600 font-semibold" id="gameplay-score-counter">Poin: 0</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Design Artifact / Case Visual -->
+                <div class="lg:col-span-6 glass-panel p-6 rounded-3xl space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span id="gameplay-case-number" class="text-xs font-bold text-purple-600 tracking-wider">KASUS #1</span>
+                            <span id="gameplay-difficulty" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 border border-purple-200">Pemula</span>
+                        </div>
+                        <h3 id="gameplay-case-title" class="text-xl font-bold text-slate-900 mb-2">Judul Kasus</h3>
+                        <p id="gameplay-case-desc" class="text-slate-600 text-sm leading-relaxed mb-4">Deskripsi kasus investigasi...</p>
+                    </div>
+
+                    <!-- Visual Artifact Box (SVG / Interactive Preview) -->
+                    <div id="gameplay-artifact" class="bg-purple-50 border border-purple-200 rounded-2xl p-4 flex items-center justify-center min-h-[260px] relative overflow-hidden shadow-inner">
+                        <!-- Injected SVG Case Graphic -->
+                    </div>
+
+                    <div class="bg-purple-50 p-3 rounded-xl border border-purple-200 flex items-center justify-between">
+                        <div class="flex items-center space-x-2 text-xs text-slate-700">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                            <span>Butuh bantuan petunjuk?</span>
+                        </div>
+                        <button onclick="useHint()" id="btn-hint" class="bg-white hover:bg-purple-100 text-amber-600 border border-amber-300 px-3 py-1.5 rounded-lg text-xs font-bold transition shadow-sm">
+                            Gunakan Petunjuk (-10 Poin)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Investigation Question & Options -->
+                <div class="lg:col-span-6 glass-panel p-6 sm:p-8 rounded-3xl space-y-6 flex flex-col justify-between">
+                    <div class="space-y-4">
+                        <h4 class="text-lg font-bold text-slate-900 flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-question text-purple-600"></i>
+                            <span id="gameplay-question">Pertanyaan Investigasi...</span>
+                        </h4>
+
+                        <!-- Options Container -->
+                        <div class="space-y-3" id="gameplay-options">
+                            <!-- Injected Options -->
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 pt-4">
+                        <button onclick="submitAnswer()" id="btn-submit-answer" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-500/20 text-sm">
+                            Periksa Jawaban Investigasi
+                        </button>
+
+                        <!-- Feedback Box (Hidden initially) -->
+                        <div id="gameplay-feedback" class="hidden p-4 rounded-2xl border text-sm space-y-2 shadow-sm">
+                            <div id="feedback-header" class="font-bold flex items-center space-x-2"></div>
+                            <p id="feedback-explanation" class="text-slate-600 text-xs leading-relaxed"></p>
+                            <button onclick="nextMissionOrFinish()" id="btn-next-mission" class="mt-3 w-full bg-purple-900 hover:bg-purple-800 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-md">
+                                Lanjut ke Misi Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: DESIGN CLINIC ================= -->
+        <div id="view-clinic" class="view-section hidden space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-3">
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-900">Design Clinic</h2>
+                <p class="text-slate-500 text-sm sm:text-base">Pelajari analisis perbandingan <em>Before & After</em> untuk memahami kesalahan desain umum dan solusi profesionalnya.</p>
+            </div>
+
+            <!-- Clinic Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="clinic-grid">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- ================= VIEW: ASSESSMENT ================= -->
+        <div id="view-assessment" class="view-section hidden space-y-8">
+            <div class="max-w-3xl mx-auto glass-panel p-8 rounded-3xl space-y-6">
+                <div class="text-center space-y-2">
+                    <div class="inline-flex items-center space-x-2 bg-purple-100 border border-purple-200 px-3 py-1 rounded-full text-purple-700 text-xs font-semibold">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                        <span>Asesmen Pembelajaran DKV</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900" id="assessment-title">Evaluasi Akhir Prinsip Desain Grafis</h2>
+                    <p class="text-slate-500 text-sm" id="assessment-subtitle">Jawab 5 pertanyaan kasus desain grafis berikut untuk menguji pemahaman komprehensifmu.</p>
+                </div>
+
+                <!-- Assessment Question Box -->
+                <div id="assessment-form-container" class="space-y-6">
+                    <!-- Injected via JS -->
+                </div>
+
+                <div id="assessment-result-box" class="hidden p-6 rounded-2xl bg-purple-50 border border-purple-200 text-center space-y-4 shadow-sm">
+                    <h3 class="text-2xl font-bold text-slate-900">Hasil Asesmen Anda</h3>
+                    <div class="text-4xl font-black text-amber-600" id="assessment-score-display">0/100</div>
+                    <p class="text-slate-600 text-sm" id="assessment-conclusion">Kesimpulan asesmen...</p>
+                    <button onclick="resetAssessment()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm transition shadow-md">
+                        Ulangi Asesmen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW: TEACHER DASHBOARD ================= -->
+        <div id="view-teacher" class="view-section hidden space-y-8">
+            <div class="glass-panel p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                    <div class="inline-flex items-center space-x-2 bg-amber-100 border border-amber-200 px-3 py-1 rounded-full text-amber-800 text-xs font-semibold mb-2">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        <span>Panel Guru & Fasilitator DKV</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900">Dashboard Guru & Laporan Siswa</h2>
+                    <p class="text-slate-500 text-sm">Pantau progres, skor, dan hasil refleksi peserta didik yang tersimpan di perangkat lokal browser.</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="exportTeacherCSV()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2.5 rounded-xl text-sm transition shadow-md flex items-center space-x-2">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <span>Ekspor Laporan CSV</span>
+                    </button>
+                    <button onclick="resetLocalStorageData()" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-4 py-2.5 rounded-xl text-sm transition font-semibold">
+                        Reset Data Lokal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Overview Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="glass-panel p-6 rounded-2xl space-y-2">
+                    <div class="text-xs text-slate-500">Total Siswa Terdaftar</div>
+                    <div class="text-3xl font-black text-slate-900" id="teacher-total-students">0</div>
+                    <div class="text-[10px] text-purple-600">Sesi lokal di browser ini</div>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl space-y-2">
+                    <div class="text-xs text-slate-500">Rata-rata Skor Kelas</div>
+                    <div class="text-3xl font-black text-amber-600" id="teacher-avg-score">0</div>
+                    <div class="text-[10px] text-slate-500">Dari total misi & asesmen</div>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl space-y-2">
+                    <div class="text-xs text-slate-500">Misi Paling Sering Diselesaikan</div>
+                    <div class="text-lg font-bold text-purple-700 truncate" id="teacher-top-mission">Kasus #1: Kontras Warna</div>
+                    <div class="text-[10px] text-slate-500">Tingkat ketepatan tinggi</div>
+                </div>
+            </div>
+
+            <!-- Student Records Table -->
+            <div class="glass-panel p-6 rounded-3xl space-y-4">
+                <h3 class="font-bold text-slate-900 text-lg">Daftar Progres Peserta Didik</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-purple-50 text-xs uppercase text-slate-700 border-b border-purple-200">
+                            <tr>
+                                <th class="px-4 py-3 rounded-l-xl">Nama Siswa</th>
+                                <th class="px-4 py-3">Kelas</th>
+                                <th class="px-4 py-3">Misi Selesai</th>
+                                <th class="px-4 py-3">Total Skor</th>
+                                <th class="px-4 py-3 rounded-r-xl">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-student-table-body">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Technical Notice -->
+            <div class="bg-purple-50/80 border border-purple-200 p-6 rounded-2xl text-xs text-slate-600 space-y-2 shadow-sm">
+                <div class="font-bold text-slate-900 flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-info text-purple-600"></i>
+                    <span>Catatan Arsitektur & Penyimpanan Lokal (Frontend-Only)</span>
+                </div>
+                <p>
+                    Aplikasi ini berjalan sepenuhnya di sisi klien (frontend) menggunakan <code>localStorage</code> browser untuk kemudahan implementasi tanpa setup database server. Untuk penggunaan terpusat lintas perangkat di sekolah, kode ini siap diintegrasikan dengan backend seperti Firebase, Supabase, atau REST API menggunakan struktur data JSON yang sama.
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: Identity Input -->
+    <div id="modal-identity" class="fixed inset-0 bg-purple-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-md w-full p-8 rounded-3xl space-y-6 border border-purple-300 shadow-2xl">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center text-2xl font-bold shadow-sm">
+                    <i class="fa-solid fa-id-card"></i>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900">Identitas Detektif</h3>
+                <p class="text-xs text-slate-500">Masukkan nama dan kelas Anda untuk mulai menginvestigasi kasus desain.</p>
+            </div>
+
+            <form id="form-identity" onsubmit="saveIdentity(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-700">Nama Lengkap *</label>
+                    <input type="text" id="input-name" required placeholder="Contoh: Budi Santoso" class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-700">Kelas *</label>
+                    <select id="input-class" required class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm">
+                        <option value="X DKV 1">X DKV 1</option>
+                        <option value="X DKV 2">X DKV 2</option>
+                        <option value="XI DKV 1">XI DKV 1</option>
+                        <option value="XI DKV 2">XI DKV 2</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-700">Nomor Absen</label>
+                        <input type="number" id="input-number" placeholder="Cth: 12" class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-semibold text-slate-700">Kode Sesi</label>
+                        <input type="text" id="input-session" placeholder="Opsional" class="w-full bg-white border border-purple-200 rounded-xl px-4 py-3 text-sm text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm">
+                    </div>
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-500/20 text-sm">
+                        Mulai Investigasi Sekarang <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Reflection & Summary After Finishing Missions -->
+    <div id="modal-reflection" class="fixed inset-0 bg-purple-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-lg w-full p-8 rounded-3xl space-y-6 border border-amber-300 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl font-bold shadow-sm">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900">Refleksi Belajar Detektif</h3>
+                <p class="text-xs text-slate-500">Isi refleksi singkat ini untuk merekam pemahaman konsep desain grafis Anda.</p>
+            </div>
+
+            <form onsubmit="saveReflection(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-700">1. Kesalahan desain apa yang paling mudah Anda temukan?</label>
+                    <textarea id="ref-1" required rows="2" class="w-full bg-white border border-purple-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm" placeholder="Contoh: Kontras warna rendah pada teks..."></textarea>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-700">2. Kesalahan apa yang masih sulit Anda analisis?</label>
+                    <textarea id="ref-2" required rows="2" class="w-full bg-white border border-purple-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm" placeholder="Contoh: Penataan hierarki visual pada poster kompleks..."></textarea>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-700">3. Prinsip desain apa yang paling Anda pahami setelah permainan?</label>
+                    <textarea id="ref-3" required rows="2" class="w-full bg-white border border-purple-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm" placeholder="Contoh: Prinsip keseimbangan dan penggunaan tipografi..."></textarea>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-semibold text-slate-700">4. Bagaimana Anda menerapkan pengetahuan tersebut pada karya desain Anda?</label>
+                    <textarea id="ref-4" required rows="2" class="w-full bg-white border border-purple-200 rounded-xl p-3 text-xs text-slate-800 focus:outline-none focus:border-purple-600 shadow-sm" placeholder="Contoh: Saya akan selalu memeriksa kontras dan hierarki sebelum finalisasi karya..."></textarea>
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 rounded-xl transition shadow-lg text-sm">
+                        Simpan Refleksi & Lihat Rangkuman <i class="fa-solid fa-check ml-1"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-purple-100 py-6 mt-12 text-center text-xs text-slate-500 space-y-2 shadow-sm">
+        <p>&copy; 2026 DESIGN DETECTIVE — Game-Based Learning Media untuk SMK DKV.</p>
+        <p class="text-[10px] text-slate-400">Dikembangkan untuk Pembelajaran Interaktif Dasar-Dasar Desain Komunikasi Visual.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        
+        // Learning Materials Data (7 Topics)
+        const materialsData = [
+            {
+                title: "1. Prinsip Desain Grafis",
+                desc: "Prinsip dasar yang mengatur elemen-elemen visual agar membentuk karya yang harmonis, estetis, dan fungsional.",
+                goodTitle: "Desain Seimbang & Terarah",
+                badTitle: "Desain Berantakan & Tanpa Fokus",
+                goodSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#EDE9FE" rx="8"/><rect x="20" y="20" width="80" height="80" fill="#7C3AED" rx="6"/><rect x="110" y="20" width="70" height="35" fill="#F59E0B" rx="6"/><rect x="110" y="65" width="70" height="35" fill="#10B981" rx="6"/></svg>`,
+                badSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#FEE2E2" rx="8"/><circle cx="40" cy="90" r="30" fill="#EF4444"/><rect x="120" y="10" width="60" height="90" fill="#8B5CF6"/><polygon points="80,10 110,60 50,60" fill="#F59E0B"/></svg>`,
+                tips: "Gunakan grid dan pastikan elemen memiliki keselarasan (alignment) yang jelas agar mata audiens dapat mengalir dengan nyaman."
+            },
+            {
+                title: "2. Tipografi",
+                desc: "Seni dan teknik memilih serta mengatur huruf agar mudah dibaca (readability) dan menyampaikan suasana (legibility).",
+                goodTitle: "Pemilihan Font Konsisten (Maks 2-3 Jenis)",
+                badTitle: "Terlalu Banyak Jenis Font Berbeda",
+                goodSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#EDE9FE" rx="8"/><text x="20" y="40" fill="#4C1D95" font-size="18" font-weight="bold">Judul Utama Bersih</text><text x="20" y="70" fill="#6B7280" font-size="12">Teks isi menggunakan font sans-serif yang rapi dan mudah dibaca oleh semua audiens.</text></svg>`,
+                badSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#FEE2E2" rx="8"/><text x="20" y="35" fill="#EF4444" font-size="16" font-family="Courier">Font 1 Berbeda</text><text x="20" y="65" fill="#D97706" font-size="14" font-family="Impact">Font 2 Lainnya</text><text x="20" y="95" fill="#2563EB" font-size="12" font-family="serif">Font 3 Ketiga</text></svg>`,
+                tips: "Batasi maksimal 2-3 keluarga font (font family) dalam satu desain untuk menjaga konsistensi dan profesionalisme."
+            },
+            {
+                title: "3. Warna & Kontras",
+                desc: "Penggunaan harmoni warna dan perbedaan nilai gelap-terang untuk menarik perhatian dan memastikan keterbacaan teks.",
+                goodTitle: "Kontras Tinggi (Teks Gelap di Atas Terang / Sebaliknya)",
+                badTitle: "Kontras Rendah (Teks Kuning di Atas Putih)",
+                goodSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#4C1D95" rx="8"/><text x="30" y="65" fill="#F59E0B" font-size="16" font-weight="bold">Teks Kontras Sangat Jelas</text></svg>`,
+                badSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#FEF08A" rx="8"/><text x="30" y="65" fill="#FEFACC" font-size="16" font-weight="bold">Teks Sulit Dibaca</text></svg>`,
+                tips: "Selalu uji kontras warna latar belakang dengan teks. Hindari teks terang di atas latar terang atau teks gelap di atas latar gelap."
+            },
+            {
+                title: "4. Layout & Komposisi",
+                desc: "Tata letak elemen visual dalam bidang desain agar menciptakan alur baca (visual flow) yang sistematis.",
+                goodTitle: "Layout Terstruktur dengan Spacing Rapi",
+                badTitle: "Layout Berjejal & Mengabaikan Margin",
+                goodSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#EDE9FE" rx="8"/><rect x="20" y="20" width="160" height="20" fill="#7C3AED" rx="4"/><rect x="20" y="50" width="100" height="50" fill="#8B5CF6" rx="4"/><rect x="130" y="50" width="50" height="50" fill="#F59E0B" rx="4"/></svg>`,
+                badSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#FEE2E2" rx="8"/><rect x="5" y="5" width="190" height="30" fill="#EF4444"/><rect x="10" y="40" width="180" height="70" fill="#9CA3AF"/></svg>`,
+                tips: "Berikan ruang kosong (white space / negative space) yang cukup agar desain tidak terkesan sesak dan melelahkan."
+            },
+            {
+                title: "5. Penggunaan Gambar",
+                desc: "Pemilihan kualitas, resolusi, dan relevansi gambar agar mendukung pesan utama tanpa mendistraksi informasi.",
+                goodTitle: "Gambar Relevan & Resolusi Tajam",
+                badTitle: "Gambar Pecah (Pixelated) & Tidak Relevan",
+                goodSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#EDE9FE" rx="8"/><circle cx="100" cy="60" r="35" fill="#10B981"/><path d="M85 55 L95 65 L115 45" stroke="#FFFFFF" stroke-width="6" fill="none"/></svg>`,
+                badSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#FEE2E2" rx="8"/><rect x="70" y="30" width="60" height="60" fill="#EF4444" stroke="#000" stroke-dasharray="4"/></svg>`,
+                tips: "Gunakan aset gambar beresolusi tinggi dan pastikan konsep gambar memperkuat narasi pesan."
+            },
+            {
+                title: "6. Desain Poster",
+                desc: "Kombinasi judul menarik, informasi utama yang jelas, ilustrasi pendukung, dan ajakan bertindak (Call to Action).",
+                goodTitle: "Poster Informatif dengan Hierarki Jelas",
+                badTitle: "Poster Penuh Teks Tanpa Titik Fokus",
+                goodSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#EDE9FE" rx="8"/><text x="20" y="35" fill="#7C3AED" font-size="14" font-weight="bold">EVENT UTAMA</text><rect x="20" y="45" width="100" height="50" fill="#8B5CF6" rx="4"/><rect x="130" y="45" width="50" height="50" fill="#F59E0B" rx="4"/></svg>`,
+                badSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#FEE2E2" rx="8"/><text x="10" y="20" fill="#333" font-size="8">Teks sangat banyak memenuhi seluruh sudut poster tanpa ada hirarki yang jelas bagi pembaca...</text></svg>`,
+                tips: "Pastikan audiens dapat menangkap inti pesan poster dalam waktu 3 detik pertama melihat."
+            },
+            {
+                title: "7. Evaluasi Desain",
+                desc: "Metode analitis untuk mengidentifikasi masalah visual, menguji keterbacaan, dan menentukan perbaikan yang tepat.",
+                goodTitle: "Analisis Berbasis Prinsip & Umpan Balik",
+                badTitle: "Kritik Subyektif Tanpa Alasan Jelas",
+                goodSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#EDE9FE" rx="8"/><circle cx="100" cy="60" r="40" fill="none" stroke="#7C3AED" stroke-width="4"/><path d="M100 35 L100 60 L120 70" stroke="#F59E0B" stroke-width="4"/></svg>`,
+                badSvg: `<svg viewBox="0 0 200 120" class="w-full h-32"><rect width="200" height="120" fill="#FEE2E2" rx="8"/><text x="30" y="65" fill="#EF4444" font-size="14">"Jelek aja pokoknya"</text></svg>`,
+                tips: "Gunakan kriteria objektif seperti kontras, hierarki, dan keterbacaan saat mengevaluasi karya desain."
+            }
+        ];
+
+        const missionsData = [
+            // LEVEL 1: DETEKTIF PEMULA (1-4)
+            {
+                id: 1,
+                level: 1,
+                title: "Kasus #1: Kontras Warna Rendah",
+                difficulty: "Pemula",
+                points: 100,
+                desc: "Sebuah poster pameran seni menggunakan teks kuning muda di atas latar belakang putih bersih. Pengunjung mengeluhkan teks sulit dibaca.",
+                question: "Apa kesalahan utama pada desain poster tersebut dan bagaimana solusinya?",
+                options: [
+                    { text: "Kontras warna terlalu rendah. Solusi: Gunakan warna teks yang lebih gelap (misal navy atau hitam) agar kontras.", correct: true },
+                    { text: "Ukuran font terlalu besar. Solusi: Perkecil seluruh font.", correct: false },
+                    { text: "Terlalu banyak jenis gambar. Solusi: Hapus semua gambar.", correct: false },
+                    { text: "Format file salah. Solusi: Ubah ke PNG.", correct: false }
+                ],
+                explanation: "Kontras warna yang tinggi antara latar dan teks adalah kunci keterbacaan (readability). Teks terang di atas latar terang melanggar kaidah kontras visual.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#FEF08A" rx="8"/><text x="40" y="70" fill="#FEFACC" font-size="16" font-weight="bold">Pameran Seni DKV</text><text x="40" y="95" fill="#FEF9C3" font-size="10">Teks tidak terbaca jelas</text></svg>`
+            },
+            {
+                id: 2,
+                level: 1,
+                title: "Kasus #2: Font Berlebihan (Font Chaos)",
+                difficulty: "Pemula",
+                points: 100,
+                desc: "Pamflet bazar sekolah menggunakan 6 jenis font berbeda (Comic Sans, Impact, Courier, Times, Arial, Dancing Script) dalam satu halaman.",
+                question: "Mengapa desain pamflet ini terlihat tidak profesional?",
+                options: [
+                    { text: "Kurangnya ruang kosong di tepi kertas.", correct: false },
+                    { text: "Penggunaan terlalu banyak jenis font merusak konsistensi visual.", correct: true },
+                    { text: "Resolusi gambar terlalu rendah.", correct: false },
+                    { text: "Warna latar belakang terlalu gelap.", correct: false }
+                ],
+                explanation: "Konsistensi tipografi sangat penting. Terlalu banyak jenis font membuat desain terlihat kekanak-kanakan dan membingungkan pembaca.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><text x="20" y="35" fill="#EF4444" font-size="14" font-family="Courier">Bazar Sekolah</text><text x="20" y="65" fill="#D97706" font-size="12" font-family="Impact">Jumat Berkah</text><text x="20" y="95" fill="#7C3AED" font-size="10" font-family="serif">Datang & Ramaikan</text></svg>`
+            },
+            {
+                id: 3,
+                level: 1,
+                title: "Kasus #3: Judul Poster Kurang Menonjol",
+                difficulty: "Pemula",
+                points: 100,
+                desc: "Poster seminar desain memiliki ukuran teks judul utama yang sama persis dengan teks paragraf penjelasan di bawahnya.",
+                question: "Bagaimana cara memperbaiki hierarki visual pada judul poster tersebut?",
+                options: [
+                    { text: "Memperbesar ukuran judul, menebalkan font, atau memberi warna kontras agar terbaca pertama kali.", correct: true },
+                    { text: "Menghapus seluruh paragraf teks.", correct: false },
+                    { text: "Mengubah orientasi poster menjadi potret.", correct: false },
+                    { text: "Menambahkan animasi bergerak pada poster.", correct: false }
+                ],
+                explanation: "Hierarki visual memastikan elemen terpenting (judul) ditangkap mata audiens pada detik pertama sebelum mereka membaca detail informasi.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><text x="20" y="50" fill="#6B7280" font-size="12">Seminar Desain Grafis 2026</text><text x="20" y="80" fill="#6B7280" font-size="12">Seminar Desain Grafis 2026</text></svg>`
+            },
+            {
+                id: 4,
+                level: 1,
+                title: "Kasus #4: Elemen Tidak Sejajar (Misalignment)",
+                difficulty: "Pemula",
+                points: 100,
+                desc: "Logo, judul, dan tombol pada banner web diletakkan secara acak tanpa garis panduan, membuat tampilan terlihat miring dan berantakan.",
+                question: "Prinsip desain apa yang diabaikan pada kasus ini?",
+                options: [
+                    { text: "Prinsip Keseimbangan Warna", correct: false },
+                    { text: "Prinsip Keselarasan / Alignment", correct: true },
+                    { text: "Prinsip Psikologi Bentuk", correct: false },
+                    { text: "Prinsip Gradasi Linier", correct: false }
+                ],
+                explanation: "Alignment (keselarasan) memberikan struktur yang rapi dan teratur sehingga mata audiens nyaman menelusuri informasi.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><rect x="25" y="30" width="50" height="20" fill="#7C3AED" rx="3"/><rect x="45" y="65" width="80" height="20" fill="#F59E0B" rx="3"/><rect x="30" y="100" width="60" height="20" fill="#10B981" rx="3"/></svg>`
+            },
+
+            // LEVEL 2: DETEKTIF MENENGAH (5-8)
+            {
+                id: 5,
+                level: 2,
+                title: "Kasus #5: Tata Letak Berantakan (Cluttered Layout)",
+                difficulty: "Menengah",
+                points: 200,
+                desc: "Poster promosi diskon produk menjejalkan terlalu banyak teks, lencana promo bertumpuk, dan warna latar neon yang saling bertabrakan.",
+                question: "Langkah perbaikan paling tepat untuk mengatasi kekacauan tata letak ini adalah:",
+                options: [
+                    { text: "Merapikan dengan grid, menambah ruang kosong (white space), dan menyederhanakan elemen penarik perhatian.", correct: true },
+                    { text: "Menambahkan 5 jenis bingkai foto di sekeliling poster.", correct: false },
+                    { text: "Mengganti semua teks menjadi huruf kapital kecil.", correct: false },
+                    { text: "Menghilangkan informasi harga produk sepenuhnya.", correct: false }
+                ],
+                explanation: "Ruang kosong (white space) adalah elemen desain yang sangat penting untuk memberikan 'napas' pada komposisi visual.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><rect x="10" y="10" width="50" height="40" fill="#EF4444"/><rect x="70" y="20" width="60" height="50" fill="#F59E0B"/><rect x="140" y="10" width="90" height="30" fill="#7C3AED"/><rect x="20" y="70" width="100" height="60" fill="#10B981"/><rect x="130" y="80" width="80" height="50" fill="#EF4444"/></svg>`
+            },
+            {
+                id: 6,
+                level: 2,
+                title: "Kasus #6: Pemilihan Kombinasi Warna",
+                difficulty: "Menengah",
+                points: 200,
+                desc: "Desain infografis kesehatan menggunakan kombinasi warna merah terang dan hijau terang berdampingan secara penuh tanpa warna netral pemisah.",
+                question: "Apa masalah utama kombinasi warna tersebut bagi sebagian audiens?",
+                options: [
+                    { text: "File desain menjadi terlalu besar saat diexport.", correct: false },
+                    { text: "Menimbulkan getaran visual (simultaneous contrast) dan menyulitkan penderita buta warna.", correct: true },
+                    { text: "Membuat printer kehabisan tinta hitam.", correct: false },
+                    { text: "Melanggar hak cipta warna digital.", correct: false }
+                ],
+                explanation: "Kombinasi merah dan hijau tanpa nilai kontras atau pemisah netral dapat menyebabkan getaran visual yang melelahkan mata.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><rect x="20" y="20" width="95" height="100" fill="#EF4444"/><rect x="125" y="20" width="95" height="100" fill="#10B981"/></svg>`
+            },
+            {
+                id: 7,
+                level: 2,
+                title: "Kasus #7: Kesalahan Hierarki Informasi",
+                difficulty: "Menengah",
+                points: 200,
+                desc: "Pada poster konser musik, nama sponsor ditulis dengan font ukuran 28pt di bagian tengah atas, sementara nama bintang tamu ditulis 12pt di bawah.",
+                question: "Mengapa susunan hierarki ini dianggap salah besar?",
+                options: [
+                    { text: "Sponsor seharusnya tidak boleh dicantumkan.", correct: false },
+                    { text: "Informasi primer (bintang tamu/acara) harus lebih menonjol daripada informasi sekunder (sponsor).", correct: true },
+                    { text: "Warna poster kurang cerah.", correct: false },
+                    { text: "Jumlah sponsor terlalu sedikit.", correct: false }
+                ],
+                explanation: "Hierarki informasi harus memandu audiens dari hal paling utama (Core Message) ke pendukung (Supporting details).",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><text x="40" y="50" fill="#D97706" font-size="20" font-weight="bold">PT. SPONSOR JAYA</text><text x="70" y="90" fill="#6B7280" font-size="10">Band Indie Lokal</text></svg>`
+            },
+            {
+                id: 8,
+                level: 2,
+                title: "Kasus #8: Jarak Antarelemen (Spacing) & Keterbacaan",
+                difficulty: "Menengah",
+                points: 200,
+                desc: "Teks paragraf artikel majalah memiliki jarak antarbaris (line-height) sangat rapat dan lebar kolom teks terlalu panjang (80 kata per baris).",
+                question: "Bagaimana cara meningkatkan kenyamanan baca (readability) paragraf tersebut?",
+                options: [
+                    { text: "Memperlebar line-height (leading) dan membatasi lebar kolom sekitar 45-75 karakter per baris.", correct: true },
+                    { text: "Mengubah seluruh teks menjadi huruf miring (italic).", correct: false },
+                    { text: "Menambahkan latar belakang bertekstur titik-titik.", correct: false },
+                    { text: "Memperkecil ukuran font menjadi 8pt.", correct: false }
+                ],
+                explanation: "Panjang baris teks yang terlalu panjang membuat mata pembaca kesulitan berpindah ke baris berikutnya.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><line x1="20" y1="30" x2="220" y2="30" stroke="#6B7280" stroke-width="4"/><line x1="20" y1="45" x2="220" y2="45" stroke="#6B7280" stroke-width="4"/><line x1="20" y1="60" x2="220" y2="60" stroke="#6B7280" stroke-width="4"/><line x1="20" y1="75" x2="220" y2="75" stroke="#6B7280" stroke-width="4"/></svg>`
+            },
+
+            // LEVEL 3: DETEKTIF PROFESIONAL (9-12)
+            {
+                id: 9,
+                level: 3,
+                title: "Kasus #9: Analisis Poster Promosi Produk",
+                difficulty: "Profesional",
+                points: 300,
+                desc: "Poster promosi minuman segar memiliki gambar produk yang buram (pixelated), teks harga tertutup bayangan gelap, dan tanpa Call to Action.",
+                question: "Sebagai Design Detective profesional, apa tiga perbaikan esensial yang harus direkomendasikan?",
+                options: [
+                    { text: "Ganti gambar beresolusi tinggi, perjelas kontras teks harga, dan tambahkan tombol/ajakan beli yang jelas.", correct: true },
+                    { text: "Ubah warna latar jadi hitam total dan hilangkan harga produk.", correct: false },
+                    { text: "Gunakan 4 jenis font sambung yang elegan.", correct: false },
+                    { text: "Perbesar logo perusahaan hingga menutupi seluruh produk.", correct: false }
+                ],
+                explanation: "Desain komersial profesional menuntut kualitas aset prima, informasi harga terbaca instan, dan ajakan aksi yang tegas.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><rect x="80" y="25" width="80" height="90" fill="#EF4444" stroke="#000" stroke-dasharray="3"/><text x="95" y="75" fill="#FFF" font-size="10">BURAM</text></svg>`
+            },
+            {
+                id: 10,
+                level: 3,
+                title: "Kasus #10: Desain Konten Media Sosial (Feed IG)",
+                difficulty: "Profesional",
+                points: 300,
+                desc: "Carousel Instagram edukasi desain memiliki margin terluar yang terlalu tipis sehingga teks terpotong oleh tombol profil dan ikon like di aplikasi.",
+                question: "Konsep apa yang diabaikan dalam perancangan layout konten media sosial ini?",
+                options: [
+                    { text: "Safe Zone (Area Aman) dan Margin Padding antarmuka platform.", correct: true },
+                    { text: "Psikologi warna analogus.", correct: false },
+                    { text: "Format kompresi file JPEG vs PNG.", correct: false },
+                    { text: "Penggunaan efek bevel and emboss.", correct: false }
+                ],
+                explanation: "Setiap platform media sosial memiliki area aman (safe zone) tersendiri agar informasi penting tidak tertutup elemen UI aplikasi.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#EDE9FE" rx="8"/><rect x="5" y="5" width="230" height="130" fill="none" stroke="#EF4444" stroke-width="2" stroke-dasharray="4"/><text x="15" y="25" fill="#EF4444" font-size="10">Teks keluar dari safe zone!</text></svg>`
+            },
+            {
+                id: 11,
+                level: 3,
+                title: "Kasus #11: Desain Kemasan Produk (Packaging)",
+                difficulty: "Profesional",
+                points: 300,
+                desc: "Kemasan produk kopi bubuk lokal menggunakan informasi komposisi dan aturan seduh dengan ukuran 5pt berwarna abu-abu tipis di atas latar hitam.",
+                question: "Apa evaluasi krusial dari sudut pandang regulatory dan desain kemasan?",
+                options: [
+                    { text: "Informasi wajib konsumen (komposisi/aturan) melanggar standar keterbacaan dan harus kontras serta ukuran memadai.", correct: true },
+                    { text: "Kemasan terlalu mahal karena menggunakan warna hitam.", correct: false },
+                    { text: "Gambar biji kopi harus dihilangkan.", correct: false },
+                    { text: "Nama produk harus ditulis dalam bahasa asing.", correct: false }
+                ],
+                explanation: "Desain kemasan tidak hanya estetis, tetapi harus memenuhi standar informasi konsumen yang jelas dan mudah dibaca oleh siapa saja.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#1E1B4B" rx="8"/><rect x="70" y="20" width="100" height="100" fill="#4C1D95" rx="6"/><text x="85" y="110" fill="#9CA3AF" font-size="6">Komposisi: Kopi 100%...</text></svg>`
+            },
+            {
+                id: 12,
+                level: 3,
+                title: "Kasus #12: Investigasi Kompleks Multi-Kesalahan",
+                difficulty: "Profesional",
+                points: 300,
+                desc: "Sebuah poster kampanye lingkungan memiliki 5 jenis font, kontras warna teks dan latar sangat rendah, tanpa margin, dan gambar ilustrasi pecah.",
+                question: "Sebagai Master Detective, tentukan prioritas perbaikan total untuk kasus kompleks ini:",
+                options: [
+                    { text: "Perbaiki kontras warna, sederhanakan jadi 2 font, ganti gambar vektor tajam, dan atur ulang margin layout.", correct: true },
+                    { text: "Cukup tambahkan filter blur pada latar belakang poster.", correct: false },
+                    { text: "Ganti seluruh warna poster menjadi hitam putih tanpa teks.", correct: false },
+                    { text: "Perkecil seluruh elemen poster sebesar 50%.", correct: false }
+                ],
+                explanation: "Kasus kompleks memerlukan pendekatan holistik mencakup tipografi, kontras warna, kualitas aset visual, dan struktur layout grid.",
+                svg: `<svg viewBox="0 0 240 140" class="w-full h-40"><rect width="240" height="140" fill="#FEF08A" rx="8"/><text x="10" y="30" fill="#EF4444" font-size="12" font-family="Impact">KAMPANYE</text><circle cx="180" cy="80" r="30" fill="#10B981" stroke="#000" stroke-dasharray="2"/><text x="10" y="110" fill="#6B7280" font-size="8">Teks tidak terstruktur...</text></svg>`
+            }
+        ];
+
+        const assessmentQuestions = [
+            {
+                q: "1. Apa fungsi utama dari penerapan prinsip hierarki visual dalam sebuah desain poster?",
+                options: [
+                    "Membuat seluruh teks berukuran sama besar.",
+                    "Memandu mata audiens memahami informasi paling penting terlebih dahulu.",
+                    "Menambahkan jumlah warna sebanyak mungkin.",
+                    "Mempercepat waktu render file desain."
+                ],
+                correct: 1
+            },
+            {
+                q: "2. Kombinasi manakah yang memenuhi standar kontras warna yang baik untuk keterbacaan?",
+                options: [
+                    "Teks kuning muda di atas latar putih bersih.",
+                    "Teks abu-abu terang di atas latar putih.",
+                    "Teks putih tebal di atas latar ungu gelap.",
+                    "Teks hijau neon di atas latar kuning terang."
+                ],
+                correct: 2
+            },
+            {
+                q: "3. Mengapa seorang desainer DKV sebaiknya membatasi penggunaan jenis font (font family) dalam satu karya?",
+                options: [
+                    "Agar file desain tidak berukuran besar.",
+                    "Untuk menjaga konsistensi visual dan menghindari kesan berantakan.",
+                    "Karena aturan lisensi melarang penggunaan banyak font.",
+                    "Agar proses cetak printer lebih cepat."
+                ],
+                correct: 1
+            },
+            {
+                q: "4. Apa yang dimaksud dengan 'White Space' (Ruang Kosong) dalam layout desain?",
+                options: [
+                    "Area kosong yang dibiarkan tanpa elemen untuk memberikan kenyamanan visual dan fokus.",
+                    "Kesalahan saat memotong kertas cetak.",
+                    "Warna putih yang wajib ada di setiap sudut poster.",
+                    "Sisa ruang untuk tanda tangan klien."
+                ],
+                correct: 0
+            },
+            {
+                q: "5. Saat mengevaluasi desain kemasan produk, aspek apa yang paling krusial selain estetika visual?",
+                options: [
+                    "Jumlah ornamen dekoratif yang rumit.",
+                    "Keterbacaan informasi wajib konsumen seperti komposisi dan petunjuk penggunaan.",
+                    "Penggunaan efek 3D yang berlebihan.",
+                    "Nama desainer yang ditulis dengan ukuran terbesar."
+                ],
+                correct: 1
+            }
+        ];
+
+        const clinicData = [
+            {
+                title: "Klinik #1: Kontras Teks & Latar Belakang",
+                category: "Warna & Keterbacaan",
+                beforeText: "Teks putih tipis di atas latar kuning muda (Kontras Rendah, Sulit Dibaca).",
+                afterText: "Teks ungu tebal di atas latar kuning cerah atau teks putih di atas latar ungu gelap (Kontras Tinggi, Sangat Jelas).",
+                reason: "Mata manusia memerlukan perbedaan luminans (cahaya) yang cukup antara latar dan teks agar dapat membaca tanpa ketegangan."
+            },
+            {
+                title: "Klinik #2: Konsistensi Tipografi",
+                category: "Tipografi",
+                beforeText: "Menggunakan 5-6 font berbeda dalam satu pamflet (Comic Sans, Impact, Script, dll).",
+                afterText: "Menggunakan 1 font family dengan variasi Weight (Regular, Bold, Italic) untuk judul dan isi.",
+                reason: "Membatasi variasi font menciptakan kesatuan (unity) visual dan profesionalisme karya DKV."
+            },
+            {
+                title: "Klinik #3: Perbaikan Hierarki Poster",
+                category: "Layout & Komposisi",
+                beforeText: "Judul, tanggal, dan nama sponsor berukuran sama dan saling bertumpuk.",
+                afterText: "Judul dibuat dominan (besar & tebal), tanggal/lokasi sedang, sponsor di bagian bawah dengan ukuran proporsional.",
+                reason: "Hierarki memastikan pesan utama tersampaikan dalam 3 detik pertama audiens melihat poster."
+            }
+        ];
+
+        // Active State Variables
+        let currentUser = null;
+        let activeMaterialIndex = 0;
+        let currentMissionFilter = 'all';
+        let activeGameplayMissionId = null;
+        let currentHintUsed = false;
+
+        // Load initialization on window load
+        window.onload = function() {
+            checkExistingSession();
+            renderMaterials();
+            renderMissions();
+            renderClinic();
+            renderAssessment();
+        };
+
+        // Router Function
+        function router(viewName) {
+            // Check auth for restricted views
+            if ((viewName === 'dashboard' || viewName === 'missions') && !currentUser) {
+                openIdentityModal();
+                return;
+            }
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            const targetView = document.getElementById('view-' + viewName);
+            if (targetView) targetView.classList.remove('hidden');
+
+            // Update active nav styling
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-100', 'text-purple-700', 'font-bold');
+                if (btn.getAttribute('data-target') === viewName) {
+                    btn.classList.add('bg-purple-100', 'text-purple-700', 'font-bold');
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (viewName === 'dashboard') {
+                updateDashboardData();
+            } else if (viewName === 'teacher') {
+                renderTeacherDashboard();
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Identity & Session Management
+        function checkExistingSession() {
+            const saved = localStorage.getItem('dd_current_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                applyUserSessionUI();
+            }
+        }
+
+        function openIdentityModal() {
+            document.getElementById('modal-identity').classList.remove('hidden');
+        }
+
+        function saveIdentity(e) {
+            e.preventDefault();
+            const name = document.getElementById('input-name').value.trim();
+            const className = document.getElementById('input-class').value;
+            const number = document.getElementById('input-number').value.trim();
+            const session = document.getElementById('input-session').value.trim();
+
+            let users = JSON.parse(localStorage.getItem('dd_users') || '[]');
+            let existing = users.find(u => u.name.toLowerCase() === name.toLowerCase() && u.className === className);
+
+            if (existing) {
+                currentUser = existing;
+            } else {
+                currentUser = {
+                    id: 'usr_' + Date.now(),
+                    name: name,
+                    className: className,
+                    number: number || '-',
+                    session: session || 'Umum',
+                    score: 0,
+                    completedMissions: [],
+                    assessmentScore: null,
+                    reflection: null,
+                    createdAt: new Date().toLocaleDateString()
+                };
+                users.push(currentUser);
+                localStorage.setItem('dd_users', JSON.stringify(users));
+            }
+
+            localStorage.setItem('dd_current_user', JSON.stringify(currentUser));
+            document.getElementById('modal-identity').classList.add('hidden');
+            applyUserSessionUI();
+            router('dashboard');
+        }
+
+        function applyUserSessionUI() {
+            if (!currentUser) return;
+            document.getElementById('user-badge').classList.remove('hidden');
+            document.getElementById('user-badge').classList.add('flex');
+            document.getElementById('btn-login-header').classList.add('hidden');
+            document.getElementById('badge-name').innerText = currentUser.name;
+            document.getElementById('badge-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+
+            // Show restricted navs
+            document.getElementById('nav-dashboard').classList.remove('hidden');
+            document.getElementById('nav-missions').classList.remove('hidden');
+            document.getElementById('mob-dashboard').classList.remove('hidden');
+            document.getElementById('mob-missions').classList.remove('hidden');
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('dd_current_user');
+            currentUser = null;
+            document.getElementById('user-badge').classList.add('hidden');
+            document.getElementById('btn-login-header').classList.remove('hidden');
+            document.getElementById('nav-dashboard').classList.add('hidden');
+            document.getElementById('nav-missions').classList.add('hidden');
+            document.getElementById('mob-dashboard').classList.add('hidden');
+            document.getElementById('mob-missions').classList.add('hidden');
+            router('home');
+        }
+
+        function startInvestigationFlow() {
+            if (!currentUser) {
+                openIdentityModal();
+            } else {
+                router('missions');
+            }
+        }
+
+        // Dashboard Data Update
+        function updateDashboardData() {
+            if (!currentUser) return;
+            document.getElementById('dash-name').innerText = currentUser.name;
+            document.getElementById('dash-class').innerText = currentUser.className + (currentUser.number !== '-' ? ` (Absen ${currentUser.number})` : '');
+            document.getElementById('dash-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('dash-score').innerText = currentUser.score;
+            
+            const completedCount = currentUser.completedMissions.length;
+            document.getElementById('dash-missions-completed').innerText = `${completedCount}/12`;
+
+            // Rank & Progress
+            let rankTitle = "Detektif Pemula";
+            let rankDesc = "Selesaikan misi Level 1 untuk membuka lencana berikutnya.";
+            let pct = Math.round((completedCount / 12) * 100);
+
+            if (completedCount >= 4 && completedCount < 8) {
+                rankTitle = "Analis Desain";
+                rankDesc = "Hebat! Lanjutkan ke misi Level 2 untuk menguji analisis layout dan warna.";
+            } else if (completedCount >= 8) {
+                rankTitle = "Master Detective";
+                rankDesc = "Luar biasa! Anda telah menguasai investigasi desain tingkat profesional.";
+            }
+
+            document.getElementById('dash-rank-title').innerText = rankTitle;
+            document.getElementById('badge-level').innerText = rankTitle;
+            document.getElementById('dash-rank-pct').innerText = pct + '%';
+            document.getElementById('dash-rank-bar').style.width = pct + '%';
+            document.getElementById('dash-rank-desc').innerText = rankDesc;
+
+            // Badges UI
+            if (completedCount >= 4) {
+                document.getElementById('badge-1').classList.remove('opacity-40');
+                document.getElementById('badge-1').classList.add('border-purple-500', 'bg-purple-50');
+            }
+            if (completedCount >= 8) {
+                document.getElementById('badge-2').classList.remove('opacity-40');
+                document.getElementById('badge-2').classList.add('border-amber-400', 'bg-amber-50');
+            }
+            if (completedCount >= 12) {
+                document.getElementById('badge-3').classList.remove('opacity-40');
+                document.getElementById('badge-3').classList.add('border-red-400', 'bg-red-50');
+            }
+
+            // Recommendation
+            if (completedCount === 0) {
+                document.getElementById('dash-recommendation').innerText = "Rekomendasi awal: Mulai dari Kasus #1 (Kontras Warna) di Level 1.";
+            } else if (completedCount < 4) {
+                document.getElementById('dash-recommendation').innerText = "Rekomendasi: Selesaikan sisa misi Level 1 (Tipografi & Hierarki).";
+            } else if (completedCount < 8) {
+                document.getElementById('dash-recommendation').innerText = "Rekomendasi: Masuki Level 2 untuk menganalisis layout dan komposisi.";
+            } else {
+                document.getElementById('dash-recommendation').innerText = "Rekomendasi: Pertajam analisis profesional di Level 3 (Kasus Kampanye & Kemasan).";
+            }
+        }
+
+        // Materials Rendering
+        function renderMaterials() {
+            const container = document.getElementById('material-content-container');
+            const mat = materialsData[activeMaterialIndex];
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div class="space-y-4">
+                        <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Modul DKV #${activeMaterialIndex + 1}</span>
+                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900">${mat.title}</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">${mat.desc}</p>
+                        <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200 space-y-2">
+                            <div class="font-bold text-xs text-amber-700 flex items-center space-x-2">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                <span>Tips Praktis Desain:</span>
+                            </div>
+                            <p class="text-xs text-slate-700">${mat.tips}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-white p-4 rounded-2xl border border-emerald-300 space-y-2 shadow-sm">
+                                <div class="text-xs font-bold text-emerald-700 flex items-center space-x-1">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>CONTOH BAIK</span>
+                                </div>
+                                ${mat.goodSvg}
+                                <div class="text-[11px] text-slate-800 font-semibold">${mat.goodTitle}</div>
+                            </div>
+                            <div class="bg-white p-4 rounded-2xl border border-red-300 space-y-2 shadow-sm">
+                                <div class="text-xs font-bold text-red-600 flex items-center space-x-1">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                    <span>CONTOH BERMASALAH</span>
+                                </div>
+                                ${mat.badSvg}
+                                <div class="text-[11px] text-slate-800 font-semibold">${mat.badTitle}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function switchMaterial(idx) {
+            activeMaterialIndex = idx;
+            document.querySelectorAll('.mat-tab').forEach((tab, i) => {
+                tab.classList.remove('bg-purple-600', 'text-white', 'shadow-md');
+                tab.classList.add('bg-white', 'text-slate-600', 'border', 'border-purple-100');
+                if (i === idx) {
+                    tab.classList.remove('bg-white', 'text-slate-600', 'border', 'border-purple-100');
+                    tab.classList.add('bg-purple-600', 'text-white', 'shadow-md');
+                }
+            });
+            renderMaterials();
+        }
+
+        // Missions Rendering & Filtering
+        function renderMissions() {
+            const grid = document.getElementById('missions-grid');
+            grid.innerHTML = '';
+
+            let filtered = missionsData;
+            if (currentMissionFilter !== 'all') {
+                filtered = missionsData.filter(m => m.level === currentMissionFilter);
+            }
+
+            filtered.forEach(m => {
+                let isCompleted = currentUser && currentUser.completedMissions.includes(m.id);
+                let diffColor = m.level === 1 ? 'text-purple-700 bg-purple-50 border-purple-200' : (m.level === 2 ? 'text-amber-800 bg-amber-50 border-amber-200' : 'text-red-700 bg-red-50 border-red-200');
+
+                grid.innerHTML += `
+                    <div class="glass-panel p-6 rounded-2xl space-y-4 hover:border-purple-400 transition flex flex-col justify-between relative overflow-hidden">
+                        <!-- Background Card Image Overlay -->
+                        <div class="absolute inset-0 z-0 opacity-10 pointer-events-none bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/d/1TFVsvduim7vYh1AT8nJExk4C1EPCvYE8');"></div>
+                        <div class="relative z-10 space-y-4 flex flex-col justify-between h-full">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold px-2.5 py-1 rounded-full border ${diffColor}">${m.difficulty}</span>
+                                    <span class="text-xs font-semibold text-amber-600"><i class="fa-solid fa-star mr-1"></i>+${m.points} Poin</span>
+                                </div>
+                                <h3 class="font-bold text-slate-900 text-lg">${m.title}</h3>
+                                <p class="text-slate-500 text-xs leading-relaxed line-clamp-2">${m.desc}</p>
+                            </div>
+                            <div class="pt-2 flex items-center justify-between">
+                                <span class="text-[11px] font-semibold ${isCompleted ? 'text-emerald-600' : 'text-slate-400'}">
+                                    <i class="fa-solid ${isCompleted ? 'fa-circle-check' : 'fa-circle-dot'} mr-1"></i>
+                                    ${isCompleted ? 'Selesai' : 'Belum Dikerjakan'}
+                                </span>
+                                <button onclick="startMission(${m.id})" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md">
+                                    ${isCompleted ? 'Ulangi Misi' : 'Mulai Investigasi'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterMissions(lvl) {
+            currentMissionFilter = lvl;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('text-slate-600');
+                if (btn.getAttribute('data-level') == lvl) {
+                    btn.classList.add('bg-purple-600', 'text-white');
+                    btn.classList.remove('text-slate-600');
+                }
+            });
+            renderMissions();
+        }
+
+        // Gameplay Logic
+        function startMission(missionId) {
+            if (!currentUser) {
+                openIdentityModal();
+                return;
+            }
+
+            activeGameplayMissionId = missionId;
+            currentHintUsed = false;
+            const mission = missionsData.find(m => m.id === missionId);
+
+            document.getElementById('gameplay-level-badge').innerText = `Level ${mission.level} — ${mission.difficulty}`;
+            document.getElementById('gameplay-score-counter').innerText = `Poin Anda: ${currentUser.score}`;
+            document.getElementById('gameplay-case-number').innerText = `KASUS #${mission.id}`;
+            document.getElementById('gameplay-difficulty').innerText = mission.difficulty;
+            document.getElementById('gameplay-case-title').innerText = mission.title;
+            document.getElementById('gameplay-case-desc').innerText = mission.desc;
+            document.getElementById('gameplay-artifact').innerHTML = mission.svg;
+            document.getElementById('gameplay-question').innerText = mission.question;
+
+            // Render Options
+            const optContainer = document.getElementById('gameplay-options');
+            optContainer.innerHTML = '';
+            mission.options.forEach((opt, idx) => {
+                optContainer.innerHTML += `
+                    <label class="flex items-start space-x-3 bg-purple-50/50 hover:bg-purple-50 p-3.5 rounded-xl border border-purple-200 cursor-pointer transition">
+                        <input type="radio" name="game_option" value="${idx}" class="mt-1 text-purple-600 focus:ring-purple-500">
+                        <span class="text-xs sm:text-sm text-slate-800">${opt.text}</span>
+                    </label>
+                `;
+            });
+
+            // Reset UI feedback
+            document.getElementById('gameplay-feedback').classList.add('hidden');
+            document.getElementById('btn-submit-answer').classList.remove('hidden');
+            document.getElementById('btn-hint').disabled = false;
+            document.getElementById('btn-hint').classList.remove('opacity-50');
+
+            router('gameplay');
+        }
+
+        function useHint() {
+            if (currentHintUsed) return;
+            currentHintUsed = true;
+            document.getElementById('btn-hint').disabled = true;
+            document.getElementById('btn-hint').classList.add('opacity-50');
+
+            const mission = missionsData.find(m => m.id === activeGameplayMissionId);
+            // Deduct 10 points penalty if score > 0
+            currentUser.score = Math.max(0, currentUser.score - 10);
+            saveUserToStorage();
+
+            document.getElementById('gameplay-score-counter').innerText = `Poin Anda: ${currentUser.score}`;
+            
+            alertBoxCustom("Petunjuk Detektif: Perhatikan baik-baik prinsip dasar " + mission.difficulty.toLowerCase() + " yang telah dibahas pada modul materi!");
+        }
+
+        function alertBoxCustom(msg) {
+            const div = document.createElement('div');
+            div.className = 'fixed top-5 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white font-bold px-6 py-3 rounded-2xl shadow-2xl z-50 text-xs sm:text-sm animate-bounce';
+            div.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i> ${msg}`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3500);
+        }
+
+        function submitAnswer() {
+            const radios = document.querySelectorAll('input[name="game_option"]');
+            let selectedIdx = -1;
+            radios.forEach((r, idx) => {
+                if (r.checked) selectedIdx = idx;
+            });
+
+            if (selectedIdx === -1) {
+                alertBoxCustom("Silakan pilih salah satu jawaban investigasi terlebih dahulu!");
+                return;
+            }
+
+            const mission = missionsData.find(m => m.id === activeGameplayMissionId);
+            const isCorrect = mission.options[selectedIdx].correct;
+
+            // Track attempts in user session
+            if (!currentUser.missionStats) {
+                currentUser.missionStats = {};
+            }
+            if (!currentUser.missionStats[activeGameplayMissionId]) {
+                currentUser.missionStats[activeGameplayMissionId] = { correct: 0, incorrect: 0 };
+            }
+
+            const feedbackBox = document.getElementById('gameplay-feedback');
+            const feedbackHeader = document.getElementById('feedback-header');
+            const feedbackExp = document.getElementById('feedback-explanation');
+
+            feedbackBox.classList.remove('hidden');
+            document.getElementById('btn-submit-answer').classList.add('hidden');
+
+            if (isCorrect) {
+                currentUser.missionStats[activeGameplayMissionId].correct += 1;
+                let correctCount = currentUser.missionStats[activeGameplayMissionId].correct;
+                let incorrectCount = currentUser.missionStats[activeGameplayMissionId].incorrect;
+
+                feedbackBox.className = 'p-4 rounded-2xl border border-emerald-300 bg-emerald-50 text-sm space-y-2';
+                feedbackHeader.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i> <span class="text-emerald-700 font-bold">Investigasi Berhasil! (Benar: ${correctCount} | Salah: ${incorrectCount}) (+${mission.points} Poin)</span>`;
+                feedbackExp.innerText = mission.explanation;
+
+                // Add points & mark completed if first time completed
+                if (!currentUser.completedMissions.includes(mission.id)) {
+                    currentUser.completedMissions.push(mission.id);
+                    currentUser.score += mission.points;
+                }
+                saveUserToStorage();
+
+                // Update button text for last mission
+                const nextBtn = document.getElementById('btn-next-mission');
+                if (activeGameplayMissionId >= 12) {
+                    nextBtn.innerHTML = `Selesaikan Semua Misi & Refleksi <i class="fa-solid fa-flag-checkered ml-1"></i>`;
+                } else {
+                    nextBtn.innerHTML = `Lanjut ke Misi Berikutnya <i class="fa-solid fa-arrow-right ml-1"></i>`;
+                }
+
+                // Check if all 12 completed -> Trigger reflection modal
+                if (currentUser.completedMissions.length === 12 && !currentUser.reflection) {
+                    setTimeout(() => {
+                        document.getElementById('modal-reflection').classList.remove('hidden');
+                    }, 1200);
+                }
+            } else {
+                currentUser.missionStats[activeGameplayMissionId].incorrect += 1;
+                let correctCount = currentUser.missionStats[activeGameplayMissionId].correct;
+                let incorrectCount = currentUser.missionStats[activeGameplayMissionId].incorrect;
+
+                feedbackBox.className = 'p-4 rounded-2xl border border-red-300 bg-red-50 text-sm space-y-2';
+                feedbackHeader.innerHTML = `<i class="fa-solid fa-circle-xmark text-red-500"></i> <span class="text-red-700 font-bold">Analisis Belum Tepat. (Benar: ${correctCount} | Salah: ${incorrectCount}) Coba Lagi!</span>`;
+                feedbackExp.innerText = "Jawaban Anda kurang tepat secara konsep DKV. " + mission.explanation;
+                saveUserToStorage();
+                // Allow retry
+                document.getElementById('btn-submit-answer').classList.remove('hidden');
+            }
+
+            document.getElementById('gameplay-score-counter').innerText = `Poin Anda: ${currentUser.score}`;
+            renderMissions(); // Refresh mission list status immediately
+        }
+
+        function nextMissionOrFinish() {
+            let nextId = activeGameplayMissionId + 1;
+            if (nextId <= 12) {
+                startMission(nextId);
+            } else {
+                router('missions');
+            }
+        }
+
+        function saveUserToStorage() {
+            let users = JSON.parse(localStorage.getItem('dd_users') || '[]');
+            users = users.map(u => u.id === currentUser.id ? currentUser : u);
+            localStorage.setItem('dd_users', JSON.stringify(users));
+            localStorage.setItem('dd_current_user', JSON.stringify(currentUser));
+        }
+
+        // Reflection
+        function saveReflection(e) {
+            e.preventDefault();
+            currentUser.reflection = {
+                r1: document.getElementById('ref-1').value,
+                r2: document.getElementById('ref-2').value,
+                r3: document.getElementById('ref-3').value,
+                r4: document.getElementById('ref-4').value,
+                date: new Date().toLocaleDateString()
+            };
+            saveUserToStorage();
+            document.getElementById('modal-reflection').classList.add('hidden');
+            alertBoxCustom("Refleksi berhasil disimpan! Terima kasih, Detektif.");
+            router('dashboard');
+        }
+
+        // Design Clinic Rendering
+        function renderClinic() {
+            const grid = document.getElementById('clinic-grid');
+            grid.innerHTML = '';
+            clinicData.forEach(c => {
+                grid.innerHTML += `
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 px-3 py-1 rounded-full">${c.category}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-lg">${c.title}</h3>
+                        <div class="space-y-3 pt-2">
+                            <div class="bg-red-50/60 p-4 rounded-xl border border-red-200 space-y-1">
+                                <div class="text-[11px] font-bold text-red-600 uppercase">Sebelum (Bermasalah):</div>
+                                <p class="text-xs text-slate-700">${c.beforeText}</p>
+                            </div>
+                            <div class="bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 space-y-1">
+                                <div class="text-[11px] font-bold text-emerald-700 uppercase">Sesudah (Solusi Profesional):</div>
+                                <p class="text-xs text-slate-700">${c.afterText}</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 leading-relaxed"><strong class="text-slate-800">Alasan DKV:</strong> ${c.reason}</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Assessment Rendering
+        function renderAssessment() {
+            const container = document.getElementById('assessment-form-container');
+            container.innerHTML = '';
+
+            assessmentQuestions.forEach((item, qIdx) => {
+                let optionsHtml = '';
+                item.options.forEach((opt, oIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-start space-x-3 bg-purple-50/40 hover:bg-purple-50 p-3 rounded-xl border border-purple-100 cursor-pointer transition">
+                            <input type="radio" name="as_q_${qIdx}" value="${oIdx}" class="mt-1 text-purple-600">
+                            <span class="text-xs text-slate-800">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="space-y-3 bg-white p-5 rounded-2xl border border-purple-100 shadow-sm">
+                        <h4 class="font-bold text-slate-900 text-sm">${item.q}</h4>
+                        <div class="space-y-2">${optionsHtml}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML += `
+                <button onclick="submitAssessment()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-500/20 text-sm">
+                    Kirim Jawaban Asesmen <i class="fa-solid fa-paper-plane ml-1"></i>
+                </button>
+            `;
+        }
+
+        function submitAssessment() {
+            let score = 0;
+            assessmentQuestions.forEach((item, qIdx) => {
+                const radios = document.querySelectorAll(`input[name="as_q_${qIdx}"]`);
+                radios.forEach((r, oIdx) => {
+                    if (r.checked && oIdx === item.correct) {
+                        score += 20; // 5 questions * 20 = 100 max
+                    }
+                });
+            });
+
+            if (currentUser) {
+                currentUser.assessmentScore = score;
+                saveUserToStorage();
+            }
+
+            document.getElementById('assessment-form-container').classList.add('hidden');
+            const resBox = document.getElementById('assessment-result-box');
+            resBox.classList.remove('hidden');
+            document.getElementById('assessment-score-display').innerText = `${score} / 100`;
+
+            let conclusion = "Luar biasa! Pemahaman prinsip desain grafis Anda sudah sangat matang.";
+            if (score < 60) {
+                conclusion = "Perlu memperkuat pemahaman materi. Silakan pelajari kembali menu Materi Pembelajaran.";
+            } else if (score < 80) {
+                conclusion = "Cukup baik! Tingkatkan ketelitian dalam menganalisis kasus desain.";
+            }
+            document.getElementById('assessment-conclusion').innerText = conclusion;
+        }
+
+        function resetAssessment() {
+            document.getElementById('assessment-result-box').classList.add('hidden');
+            document.getElementById('assessment-form-container').classList.remove('hidden');
+            renderAssessment();
+        }
+
+        // Teacher Dashboard & Export
+        function renderTeacherDashboard() {
+            const users = JSON.parse(localStorage.getItem('dd_users') || '[]');
+            document.getElementById('teacher-total-students').innerText = users.length;
+
+            let totalScoreSum = 0;
+            users.forEach(u => totalScoreSum += u.score);
+            let avg = users.length > 0 ? Math.round(totalScoreSum / users.length) : 0;
+            document.getElementById('teacher-avg-score').innerText = avg;
+
+            const tbody = document.getElementById('teacher-student-table-body');
+            tbody.innerHTML = '';
+
+            if (users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400">Belum ada data peserta didik yang tersimpan di browser ini.</td></tr>`;
+                return;
+            }
+
+            users.forEach(u => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-purple-100 hover:bg-purple-50/50">
+                        <td class="px-4 py-3 font-bold text-slate-900">${u.name}</td>
+                        <td class="px-4 py-3">${u.className}</td>
+                        <td class="px-4 py-3">${u.completedMissions.length} / 12</td>
+                        <td class="px-4 py-3 font-semibold text-amber-600">${u.score} Poin</td>
+                        <td class="px-4 py-3">
+                            <button onclick="viewStudentDetail('${u.id}')" class="text-purple-600 hover:underline text-xs font-semibold">Detail</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function viewStudentDetail(userId) {
+            const users = JSON.parse(localStorage.getItem('dd_users') || '[]');
+            const u = users.find(x => x.id === userId);
+            if (!u) return;
+
+            let assessText = u.assessmentScore !== null ? `Skor Asesmen: ${u.assessmentScore}/100` : 'Belum asesmen.';
+            alertBoxCustom(`${u.name} (${u.className}) | Misi: ${u.completedMissions.length}/12 | Skor: ${u.score} | ${assessText}`);
+        }
+
+        function exportTeacherCSV() {
+            const users = JSON.parse(localStorage.getItem('dd_users') || '[]');
+            if (users.length === 0) {
+                alertBoxCustom("Tidak ada data untuk diekspor!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,Nama,Kelas,Absen,Sesi,Total Skor,Misi Selesai,Skor Asesmen,Tanggal Daftar\n";
+            users.forEach(u => {
+                csvContent += `"${u.name}","${u.className}","${u.number}","${u.session}",${u.score},"${u.completedMissions.length}/12",${u.assessmentScore !== null ? u.assessmentScore : 'N/A'},"${u.createdAt}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "laporan_design_detective_smk_dkv.csv");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        function resetLocalStorageData() {
+            if (confirm("Apakah Anda yakin ingin mereset seluruh data lokal peserta didik? Data yang terhapus tidak dapat dikembalikan.")) {
+                localStorage.removeItem('dd_users');
+                localStorage.removeItem('dd_current_user');
+                currentUser = null;
+                logoutUser();
+                renderTeacherDashboard();
+                alertBoxCustom("Data lokal berhasil direset bersih.");
+            }
+        }
+    </script>
+</body>
+</html>
